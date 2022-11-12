@@ -1,0 +1,78 @@
+""" 34. В поезде 18 вагонов, в каждом из которых 36 мест. Информация о про¬данных на поезд билетах хранится в
+двумерном массиве, номера строк которых соответствуют номерам вагонов, а номера столбцов - номе¬рам мест. Если билет
+на то или иное место продан, то соответствую¬щий элемент массива имеет значение 1, в противном случае - 0.
+Организовать заполнение двумерного массива случайным образом. Составить программу, определяющую: а) число свободных
+мест в любом из вагонов поезда; б) номер вагона, в котором максимальное количество свободных мест (если таких
+несколько, вывести все); в) номера вагонов, занятых полностью; г) номера трех самых заполненных вагонов (для
+выполнения задания необходимо использовать вспомогательный одномерный массив, содержащий количество занятых мест в
+каждом вагоне) """
+
+import random
+
+arr = [[] for _ in range(18)]
+for i in range(18):
+    for x in range(36):
+        arr[i].append(random.randint(0, 1))
+
+#for row in arr:  # - вывод полученного массива(если нужен)
+#    print(row)
+
+# a)
+number_of_carriage = int(input('Введите номер вагона '))
+count = 36
+for i in arr[number_of_carriage - 1]:
+    if i == 1:
+        count -= 1
+
+print(f'Число свободных мест в вагоне номер {number_of_carriage + 1} равно {count}')
+
+# б), + г)
+arr_for_three_max_carriage = []
+i = 0
+next_count = 36
+count_for_three_max = 0
+max_carriage = 1
+counter = 0
+line = ''
+while True:
+    for c in arr[i]:
+        if c == 1:
+            next_count -= 1
+            count_for_three_max += 1
+    if next_count > count:
+        count = next_count
+        max_carriage = i
+
+    # в)
+    elif next_count == 0:
+        print(f'Вагон номер {i} занят полностью')
+
+    elif counter == 17:
+        break
+
+    counter += 1
+    i += 1
+    next_count = 36
+
+    # г)
+    arr_for_three_max_carriage.append(count_for_three_max)
+
+    count_for_three_max = 0
+
+print(f'Максимальное количество свободных мест в вагоне номер {max_carriage}, их {count}')
+
+# г)
+arr_for_sort = arr_for_three_max_carriage[0:len(arr_for_three_max_carriage)]
+arr_for_sort.sort()
+
+number = 0
+indexes_of_max_population = []
+excluded = []
+for i in range(1, 4):
+    number = arr_for_three_max_carriage.index(arr_for_sort[len(arr_for_sort) - i]) + 1
+    if number in excluded:
+        number = arr_for_three_max_carriage.index(arr_for_sort[len(arr_for_sort) - i], number) + 1
+    excluded.append(number)
+    indexes_of_max_population.append(number)
+
+print(f'Три самых заполненных вагонов это {indexes_of_max_population}')
